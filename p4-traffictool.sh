@@ -6,7 +6,7 @@
 #   3 p4 compilation error
 
 usage(){
-    echo "Usage: p4-traffictool.sh [-h|--help] [-p4 <path to p4 source>] [-json <path to json description>] [--std {p4-14|p4-16}] [-o <path to destination dir>] [--scapy] [--wireshark] [--moongen] [--pcpp] [--debug]"
+    echo "Usage: p4-traffictool.sh [-h|--help] [-p4 <path to p4 source>] [-json <path to json description>] [--std {p4-14|p4-16}] [--no-body] [-o <path to destination dir>] [--scapy] [--wireshark] [--moongen] [--pcpp] [--debug]"
     exit $1
 }
 
@@ -14,6 +14,7 @@ print_arguments(){
     echo -e "------------------------------------"
     echo "P4_SOURCE $P4_SOURCE"
     echo "JSONSOURCE $JSONSOURCE"
+    echo "NO BODY $NO_BODY"
     echo "SCAPY $SCAPY"
     echo "WIRESHARK $WIRESHARK"
     echo "PCAPPLUSPLUS $PCAPPLUSPLUS"
@@ -35,6 +36,7 @@ fi
 JSON_DETECT=false
 P4_DETECT=false
 OUT_DETECT=false
+NO_BODY=false
 SCAPY=false
 WIRESHARK=false
 MOONGEN=false
@@ -91,6 +93,10 @@ while test $# -gt 0; do
                 usage 2
             fi
             ;;
+	--no-body)
+	    shift
+	    NO_BODY=true
+	    ;;
         --scapy)
             shift
             SCAPY=true
@@ -176,6 +182,8 @@ if [[ "$SCAPY" = false  &&  "$MOONGEN" = false &&  "$PCAPPLUSPLUS" = false &&  "
 fi
 
 if [ "$JSON_DETECT" = false ]; then
+
+
     # creates a temp folder with timestamp to hold json script and compiled binaries
     foldername="`date +%Y%m%d%H%M%S`";
     foldername="tempfolder_$foldername"
@@ -183,6 +191,17 @@ if [ "$JSON_DETECT" = false ]; then
     jsonname="${jsonname%.*}.json"
     mkdir $foldername
     cd $foldername
+
+    # creates a tempfile which adds the headers along with stub functions for v1 model 
+    if [ "$NO_BODY" = true ]; then
+	echo "Adding p4 source file to template to create p4 source file."
+	p4filename=$(basename -- "$P4_SOURCE")
+	tempcommand="awk 'FNR==8{system(\"cat $P4_SOURCE\")} 1' ../templates/template.p4 > $p4filename"
+	#echo $tempcommand
+	eval $tempcommand
+	tempp4source=$P4_SOURCE
+	P4_SOURCE=$p4filename
+    fi
 
     # p4 source compilation
     echo -e "----------------------------------\nCompiling p4 source ..."
@@ -203,7 +222,13 @@ if [ "$JSON_DETECT" = false ]; then
         echo "Compilation successful with p4c-bm2-ss"
     fi
     echo -e "------------------------------------\n"
+   
+
+    if [ "$NO_BODY" = true ]; then
+	P4_SOURCE=$tempp4source
+    fi
     
+ 
     JSONSOURCE=$(find . -name "*.json" -type f)
     JSONSOURCE=$(realpath $JSONSOURCE)
     cd ..
