@@ -6,7 +6,7 @@
 #   3 p4 compilation error
 
 usage(){
-    echo "Usage: p4-traffictool.sh [-h|--help] [-p4 <path to p4 source>] [-json <path to json description>] [--std {p4-14|p4-16}] [--no-body] [-o <path to destination dir>] [--scapy] [--wireshark] [--moongen] [--pcpp] [--debug]"
+    echo "Usage: p4-traffictool.sh [-h|--help] [-p4 <path to p4 source>] [-json <path to json description>] [--std {p4-14|p4-16}] [--only-headers] [-o <path to destination dir>] [--scapy] [--wireshark] [--moongen] [--pcpp] [--debug]"
     exit $1
 }
 
@@ -14,7 +14,7 @@ print_arguments(){
     echo -e "------------------------------------"
     echo "P4_SOURCE $P4_SOURCE"
     echo "JSONSOURCE $JSONSOURCE"
-    echo "NO BODY $NO_BODY"
+    echo "ONLY HEADERS $ONLY_HEADERS"
     echo "SCAPY $SCAPY"
     echo "WIRESHARK $WIRESHARK"
     echo "PCAPPLUSPLUS $PCAPPLUSPLUS"
@@ -36,7 +36,7 @@ fi
 JSON_DETECT=false
 P4_DETECT=false
 OUT_DETECT=false
-NO_BODY=false
+ONLY_HEADERS=false
 SCAPY=false
 WIRESHARK=false
 MOONGEN=false
@@ -93,9 +93,9 @@ while test $# -gt 0; do
                 usage 2
             fi
             ;;
-	--no-body)
+	--only-headers)
 	    shift
-	    NO_BODY=true
+	    ONLY_HEADERS=true
 	    ;;
         --scapy)
             shift
@@ -193,7 +193,7 @@ if [ "$JSON_DETECT" = false ]; then
     cd $foldername
 
     # creates a tempfile which adds the headers along with stub functions for v1 model 
-    if [ "$NO_BODY" = true ]; then
+    if [ "$ONLY_HEADERS" = true ]; then
 	echo "Adding p4 source file to template to create p4 source file."
 	p4filename=$(basename -- "$P4_SOURCE")
 	tempcommand="awk 'FNR==8{system(\"cat $P4_SOURCE\")} 1' ../templates/template.p4 > $p4filename"
@@ -224,7 +224,7 @@ if [ "$JSON_DETECT" = false ]; then
     echo -e "------------------------------------\n"
    
 
-    if [ "$NO_BODY" = true ]; then
+    if [ "$ONLY_HEADERS" = true ]; then
 	P4_SOURCE=$tempp4source
     fi
     
