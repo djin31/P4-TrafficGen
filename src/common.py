@@ -1,32 +1,42 @@
 #!/usr/bin/python
 import json
 # open file to load json data
+
+
 def read_jsondata(filename):
     try:
         data = json.load(open(filename))
     except IOError:
-        print ("Incorrect JSON file specification")
+        print("Incorrect JSON file specification")
         exit(0)
     return data
 
-# merges padding field with the next field
+
+'''
+merge padding field with the next field
+'''
 def merge_padding(data):
     for header_type in data["header_types"]:
-        try:                                                        # try except added to prevent falling into error when scalars_0 has 0 fields
-            temp_list=[header_type["fields"][0]]
-            for i in range(1,len(header_type["fields"])):
-                if (temp_list[-1][0][:4]=="_pad"):
-                    temp_list=temp_list[:-1]
-                    temp_list.append([header_type["fields"][i][0], header_type["fields"][i-1][1]+header_type["fields"][i][1]])
+        # try except added to prevent falling into error when scalars_0 has 0 fields
+        try:
+            temp_list = [header_type["fields"][0]]
+            for i in range(1, len(header_type["fields"])):
+                if (temp_list[-1][0][:4] == "_pad"):
+                    temp_list = temp_list[:-1]
+                    temp_list.append(
+                        [header_type["fields"][i][0], header_type["fields"][i-1][1]+header_type["fields"][i][1]])
                 else:
                     temp_list.append(header_type["fields"][i])
             header_type["fields"] = temp_list
         except:
             pass
-        
+
     return data
 
-# assign valid name to state depending on which header it extracts
+
+'''
+assign valid name to state depending on which header it extracts
+'''
 def valid_state_name(state):
     if len(state["parser_ops"]) > 0:
         if type(state["parser_ops"][0]["parameters"][0]["value"]) is list:
@@ -36,20 +46,29 @@ def valid_state_name(state):
     else:
         return state["name"]
 
-# search for valid state name in the parse states
+
+'''
+search for valid state name in the parse states
+'''
 def search_state(parser, name):
     for state in parser["parse_states"]:
         if (state["name"] == name):
             return valid_state_name(state)
 
-# search for header type given the header_type_name specified in header definition
+
+'''
+search for header type given the header_type_name specified in header definition
+'''
 def search_header_type(header_types, name):
     for header_type in header_types:
         if (header_type["name"] == name):
             return header_type
 
-# make a control graph for all possible state transitions
-# returns the list of edges in graph
+
+'''
+make a control graph for all possible state transitions
+returns the list of edges in graph
+'''
 def make_control_graph(parsers, DEBUG):
     graph = []
     for parser in parsers:
@@ -78,6 +97,7 @@ def make_control_graph(parsers, DEBUG):
             print(i)
     return graph
 
+
 def make_control_graph_multi(parsers, DEBUG):
     graph = []
     for parser in parsers:
@@ -87,12 +107,15 @@ def make_control_graph_multi(parsers, DEBUG):
                 for transition in state["transitions"]:
                     if transition["next_state"] != None:
                         # extract the headers which the transition is based on one of their fields
-                        originHdr = [d["value"][0] for d in state["transition_key"]]
+                        originHdr = [d["value"][0]
+                                     for d in state["transition_key"]]
                         if(len(set(originHdr)) != 1):
-                            print("Error: Header transitions based on multiple fields from different headers are not supported.")
+                            print(
+                                "Error: Header transitions based on multiple fields from different headers are not supported.")
                             exit(1)
                         # extract the fields which the transition is based on
-                        transition_fields = [d["value"][1] for d in state["transition_key"]]
+                        transition_fields = [d["value"][1]
+                                             for d in state["transition_key"]]
                         graph.append([name,
                                       transition_fields,
                                       transition["value"],
