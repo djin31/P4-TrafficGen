@@ -95,7 +95,6 @@ parser ParserImpl(packet_in packet,
     state start {
 	/* TODO: add transition to parsing ethernet */
         transition parse_ethernet;
-        // transition accept;
     }
 
     state parse_ethernet {

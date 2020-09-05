@@ -171,10 +171,6 @@ if [[ "$SCAPY" = false  &&  "$MOONGEN" = false &&  "$PCAPPLUSPLUS" = false &&  "
         esac
     done
 
-    # SCAPY=true
-    # MOONGEN=true
-    # PCAPPLUSPLUS=true
-    # WIRESHARK=true
 fi
 
 if [[ "$SCAPY" = false  &&  "$MOONGEN" = false &&  "$PCAPPLUSPLUS" = false &&  "$WIRESHARK" = false ]] ; then

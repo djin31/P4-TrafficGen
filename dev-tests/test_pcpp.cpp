@@ -1,6 +1,5 @@
 #include "stdlib.h"
 #include "PcapFileDevice.h"
-//#include "basic_ethernet.h"
 #include "EthLayer.h"
 #include "basic2_ipv4c.h"
 #include "basic2_nona.h"
@@ -38,37 +37,6 @@ std::string getProtocolTypeAsString(pcpp::ProtocolType protocolType)
 
 int main(int argc, char* argv[])
 {
-	/*pcpp::EthernetLayer newEthernetLayer;
-        newEthernetLayer.setDstaddr(0x00aabbccddee);
-        newEthernetLayer.setSrcaddr(0x005043112233);
-        newEthernetLayer.setEthertype(0x0320);
-        newEthernetLayer.setEthertype2(0x87);
-
-        pcpp::Ipv4Layer newIpv4Layer;
-	newIpv4Layer.setVersion(0x4);
-        newIpv4Layer.setIhl(0x5);
-	newIpv4Layer.setDiffserv(0x7);
-	newIpv4Layer.setTotallen(0x5);
-	newIpv4Layer.setIdentification(0x7511);
-	newIpv4Layer.setFlags(0x5);
-	newIpv4Layer.setTest_a(0x5);
-	newIpv4Layer.setTest_b(0x13);
-        newIpv4Layer.setFragoffset(0x1153a9);
-        newIpv4Layer.setTtl(0xa);
-        newIpv4Layer.setProtocol(0x89);
-	newIpv4Layer.setSrcaddr(0x8c527119);
-	newIpv4Layer.setDstaddr(0xac1962ab);
-	
-        pcpp::NonaLayer newNonaLayer;
-	newNonaLayer.setField1(0xB);
-	newNonaLayer.setField2(0x1);
-	newNonaLayer.setField3(0x2);
-
-	pcpp::Packet newPacket(100);
-
-	newPacket.addLayer(&newEthernetLayer);
-	newPacket.addLayer(&newIpv4Layer);
-	newPacket.addLayer(&newNonaLayer);*/
 
 	pcpp::EthLayer newEthernetLayer(pcpp::MacAddress("00:50:43:11:22:33"), pcpp::MacAddress("aa:bb:cc:dd:ee"), 0x0803);
 
@@ -124,7 +92,6 @@ int main(int argc, char* argv[])
 	}
 	reader->close();
 
-        //printf("RawPacket = %s\n", rawPacket.getRawDataReadOnly());
 	std::cout<<"Raw Packet = "<< rawPacket.getRawData()<<std::endl;
 
 	pcpp::Packet parsedPacket(&rawPacket);
@@ -132,7 +99,7 @@ int main(int argc, char* argv[])
 	std::cout<<"Parsed Packet = "<<parsedPacket.toString()<<std::endl;
 
 	// first let's go over the layers one by one and find out its type, its total length, its header length and its payload length
-	for (pcpp::Layer* curLayer = /*newPacket.getFirstLayer()*/parsedPacket.getFirstLayer(); curLayer != NULL; curLayer = curLayer->getNextLayer())
+	for (pcpp::Layer* curLayer = parsedPacket.getFirstLayer(); curLayer != NULL; curLayer = curLayer->getNextLayer())
 	{
 		printf("Layer type: %s; Total data: %d [bytes]; Layer data: %d [bytes]; Layer payload: %d [bytes]\n",
 				getProtocolTypeAsString(curLayer->getProtocol()).c_str(), // get layer type

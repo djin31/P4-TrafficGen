@@ -61,32 +61,28 @@ def find_data_headers(headers, header_types):
                     "\nEthernet header detected, would you like the standard ethernet header to be used(y/n) : ").strip()
                 if temp == 'y':
                     ETHER_DETECT = True
-                    # print("\nAdd the next layers in the function parseNextLayer of PcapPlusPlus/Packet++/src/EthLayer.cpp\n")
+
             elif name == 'ipv4':
                 temp = input(
                     "\nIPv4 header detected, would you like the standard IPv4 header to be used(y/n) : ").strip()
                 if temp == 'y':
                     IPv4_DETECT = True
-                    # print("\nAdd the next layers in the function parseNextLayer of PcapPlusPlus/Packet++/src/IPv4Layer.cpp\n")
 
             elif name == 'ipv6':
                 temp = input(
                     "\nIPv6 header detected, would you like the standard IPv6 header to be used(y/n) : ").strip()
                 if temp == 'y':
                     IPv6_DETECT = True
-                    # print("\nAdd the next layers in the function parseNextLayer of PcapPlusPlus/Packet++/src/IPv6Layer.cpp\n")
 
             elif name == 'tcp':
                 temp = input("\nTCP header detected, would you like the standard TCP header to be used(y/n) : ").strip()
                 if temp == 'y':
                     TCP_DETECT = True
-                    # print("\nAdd the next layers in the function parseNextLayer of PcapPlusPlus/Packet++/src/TcpLayer.cpp\n")
 
             elif name == 'udp':
                 temp = input("\nUDP header detected, would you like the standard UDP header to be used(y/n) : ").strip()
                 if temp == 'y':
                     UDP_DETECT = True
-                    # pint("\nAdd the next layers in the function parseNextLayer of PcapPlusPlus/Packet++/src/UdpLayer.cpp\n")
 
     header_ports = list(set(header_ports))
 
@@ -604,10 +600,7 @@ def make_header_struct(fout_header, check_points, cumulative_hdr_len, header_typ
         	fout_header.write(";\n")
         	fout_header.write("#endif\n")
         	field_parts = []
-                #fout_header.write("%s : %s" %(header_type["fields"][init_idx][0], header_type["fields"][init_idx][1]))
-                #for field in header_type["fields"][init_idx+1 : check_points[i]+1]:
-                #    fout_header.write(",\n\t\t\t \t %s : %s" %(field[0],field[1]))
-                #fout_header.write(";\n")
+
         init_idx = check_points[i] + 1
     	bias = cumulative_hdr_len[check_points[i]]
     return field_sgmnt_lst
@@ -736,7 +729,6 @@ def make_template(control_graph, header, header_type, destination, header_ports)
             fout_source.write("\t\t%shdr* hdrdata = (%shdr*)m_Data;\n" % (header.lower(), header.lower()))
             if (field[1] == 24 or field[1] == 40 or field[1] == 48):
                 fout_source.write("\t\tUINT%d_HTON(%s,hdrdata->%s);\n" % (field[1], field[0], field[0]))
-                # fout_source.write("\t\treturn (%s)(UINT%d_GET(%s));\n\t}\n\n" %(predict_input_type(field[1]),field[1],field[0]))
                 fout_source.write(
                     "\t\t%s return_val = UINT%d_GET(%s);\n" % (predict_input_type(field[1]), field[1], field[0]))
                 fout_source.write("\t\treturn return_val;\n\t}\n\n")
@@ -783,8 +775,6 @@ def make_template(control_graph, header, header_type, destination, header_ports)
     fout_source.write("\t\t\treturn;\n\n")
 
     if (len(next_transitions) > 0):
-        # fout_source.write("\t\t%shdr* hdrdata = get%sHeader();\n" % (header.lower(), header.capitalize()))
-        # print('transition_key = ', transition_key)
         transition_dict = {}
         for tk in transition_key:
             for field in header_type["fields"]:
@@ -793,10 +783,8 @@ def make_template(control_graph, header, header_type, destination, header_ports)
                         predict_input_type(field[1]), tk, header.capitalize(), str(field[0]).capitalize()))
                     transition_dict[field[0]] = nibble(field[1])
                     break
-        # fout_source.write("\t\t%s %s = %s(hdrdata->%s);\n\t\t" % (
-        # predict_type(field[1]), transition_key, host_network_conversion(field), transition_key))
+
         for transition in next_transitions[:-1]:
-            # print transition
             init_idx = 2
             fout_source.write("\t\tif (%s == 0x%s" % (transition_key[0], transition[1][init_idx:init_idx+transition_dict[transition_key[0]]]))
             for idx in range(1, len(transition_key)):
