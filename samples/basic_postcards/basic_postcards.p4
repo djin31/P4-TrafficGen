@@ -129,7 +129,7 @@ parser ParserImpl(packet_in packet,
     state parse_hdr_meta {
         packet.extract(hdr.hdr_meta);
         transition select(hdr.hdr_meta.ip_protocol){
-            default:transition parse_q_meta;
+            default: parse_q_meta;
         }
     }
 
@@ -156,7 +156,7 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
 
     /* This action will drop packets */
     action drop() {
-        mark_to_drop();
+        mark_to_drop(standard_metadata);
     }
     
     action forward(egressSpec_t port) {

@@ -152,7 +152,7 @@ control verifyChecksum(inout headers hdr, inout metadata meta) {
 
 control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_t standard_metadata) {
     action drop() {
-        mark_to_drop();
+        mark_to_drop(standard_metadata);
     }
     
     action add_mri_option() {

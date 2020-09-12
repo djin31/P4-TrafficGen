@@ -167,7 +167,7 @@ control MyIngress(inout headers hdr,
 
     /* This action will drop packets */
     action drop() {
-        mark_to_drop();
+        mark_to_drop(standard_metadata);
     }
 
     action nop() {
