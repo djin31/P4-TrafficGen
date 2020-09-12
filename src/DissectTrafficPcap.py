@@ -476,7 +476,7 @@ def make_header_struct(fout_header, check_points, cumulative_hdr_len, header_typ
     for i in range(len(check_points)):
         if i == 0:
             if check_points[i] == 0:
-        	fout_header.write(spaces(8) + "%s " + spaces(4) + " " %(predict_type(cumulative_hdr_len[check_points[i]]-bias)))
+        	fout_header.write(spaces(8) + "%s "%(predict_type(cumulative_hdr_len[check_points[i]]-bias)) + spaces(4) + " " )
         	fout_header.write("%s;\n" %(header_type["fields"][init_idx][0]))
         	fields.append([(header_type["fields"][init_idx][0], predict_type(cumulative_hdr_len[check_points[i]]-bias))])
         	field_sgmnt_lst[header_type["fields"][init_idx][0]] = [header_type["fields"][init_idx][1]]
@@ -486,7 +486,7 @@ def make_header_struct(fout_header, check_points, cumulative_hdr_len, header_typ
         	field_parts = []
         	tmp_list = []
         	fout_header.write("#if (BYTE_ORDER == BIG_ENDIAN)\n")
-        	fout_header.write(spaces(8) + "%s " + spaces(4) + " " %(predict_type(cumulative_hdr_len[check_points[i]]-bias)))
+        	fout_header.write(spaces(8) + "%s "%(predict_type(cumulative_hdr_len[check_points[i]]-bias)) + spaces(4) + " ")
         	size = header_type["fields"][init_idx][1]
         	if (size - cap) <= 0:
             	    fout_header.write("%s : %s" %(header_type["fields"][init_idx][0], header_type["fields"][init_idx][1]))
@@ -527,7 +527,7 @@ def make_header_struct(fout_header, check_points, cumulative_hdr_len, header_typ
         	fout_header.write(";\n")
         	fields.append(field_parts)
         	fout_header.write("#elif (BYTE_ORDER == LITTLE_ENDIAN)\n")
-        	fout_header.write(spaces(8) + "%s " + spaces(4) + " " %(predict_type(cumulative_hdr_len[check_points[i]]-bias)))
+        	fout_header.write(spaces(8) + "%s "%(predict_type(cumulative_hdr_len[check_points[i]]-bias)) + spaces(4) + " ")
                 for k in range(len(field_parts)):
             	    segment = field_parts[k]
             	    for j in reversed(range(len(segment))):
@@ -542,7 +542,7 @@ def make_header_struct(fout_header, check_points, cumulative_hdr_len, header_typ
             #bias = cumulative_hdr_len[check_points[i]]
         elif i > 0:
             if check_points[i] - check_points[i-1] == 1:
-       		fout_header.write(spaces(8) + "%s " + spaces(4) + " " %(predict_type(cumulative_hdr_len[check_points[i]]-bias)))
+       		fout_header.write(spaces(8) + "%s "%(predict_type(cumulative_hdr_len[check_points[i]]-bias)) + spaces(4) + " ")
         	fout_header.write("%s;\n" %(header_type["fields"][init_idx][0]))
         	fields.append((header_type["fields"][init_idx][0], predict_type(cumulative_hdr_len[check_points[i]]-bias)))
         	field_sgmnt_lst[header_type["fields"][init_idx][0]] = [header_type["fields"][init_idx][1]]
@@ -552,7 +552,7 @@ def make_header_struct(fout_header, check_points, cumulative_hdr_len, header_typ
         	field_parts = []
         	tmp_list = []
         	fout_header.write("#if (BYTE_ORDER == BIG_ENDIAN)\n")
-        	fout_header.write(spaces(8) + "%s " + spaces(4) + " " %(predict_type(cumulative_hdr_len[check_points[i]]-bias)))
+        	fout_header.write(spaces(8) + "%s "%(predict_type(cumulative_hdr_len[check_points[i]]-bias)) + spaces(4) + " ")
         	size = header_type["fields"][init_idx][1]
         	if (size - cap) <= 0:
             	    fout_header.write("%s : %s" %(header_type["fields"][init_idx][0], header_type["fields"][init_idx][1]))
@@ -593,7 +593,7 @@ def make_header_struct(fout_header, check_points, cumulative_hdr_len, header_typ
         	fout_header.write(";\n")
         	fields.append(field_parts)
         	fout_header.write("#elif (BYTE_ORDER == LITTLE_ENDIAN)\n")
-        	fout_header.write(spaces(8) + "%s " + spaces(4) + " " %(predict_type(cumulative_hdr_len[check_points[i]]-bias)))
+        	fout_header.write(spaces(8) + "%s "%(predict_type(cumulative_hdr_len[check_points[i]]-bias)) + spaces(4) + " ")
         	for k in range(len(field_parts)):
             	    segment = field_parts[k]
             	    for j in reversed(range(len(segment))):
@@ -685,8 +685,7 @@ def make_template(control_graph, header, header_type, destination, header_ports)
 
     # default constructor for packet with empty raw data
     fout_header.write(
-        spaces(8) + "%sLayer(){\n" + spaces(12) + "m_DataLen = sizeof(%shdr);\n" + spaces(12) + "m_Data = new uint8_t[m_DataLen];\n" + spaces(12) + "memset(m_Data, 0, m_DataLen);\n" + spaces(12) + "m_Protocol = P4_%s;\n" + spaces(8) + "}\n" % (
-        header.capitalize(), header.lower(), header.upper()))
+        spaces(8) + "%sLayer(){\n"%(header.capitalize()) + spaces(12) + "m_DataLen = sizeof(%shdr);\n"%(header.lower()) + spaces(12) + "m_Data = new uint8_t[m_DataLen];\n" + spaces(12) + "memset(m_Data, 0, m_DataLen);\n" + spaces(12) + "m_Protocol = P4_%s;\n"%(header.upper()) + spaces(8) + "}\n")
 
     fout_header.write("\n" + spaces(8) + " // Getters and Setters for fields\n")
 
@@ -742,7 +741,7 @@ def make_template(control_graph, header, header_type, destination, header_ports)
                 fout_source.write(spaces(8) + "return return_val;\n" + spaces(4) + "}\n\n")
             else:
                 fout_source.write(spaces(8) + "%s = %s(hdrdata->%s);\n" % (field[0], host_network_conversion(field), field[0]))
-                fout_source.write(spaces(8) + "return %s;\n" + spaces(4) + "}\n\n" % (field[0]))
+                fout_source.write(spaces(8) + "return %s;\n"% (field[0]) + spaces(4) + "}\n\n")
         elif len(field_segments) > 1:
 	    fout_source.write(spaces(8) + "%s %s;\n" % (predict_input_type(field[1]), field[0]))
             fout_source.write(spaces(8) + "%shdr* hdrdata = (%shdr*)m_Data;\n" % (header.lower(), header.lower()))
@@ -755,7 +754,7 @@ def make_template(control_graph, header, header_type, destination, header_ports)
                 fout_source.write(" + ((hdrdata->%s) << %s)" %(field[0]+"_"+str(offset), field[1] - init_val))
                 offset += 1
             fout_source.write(" + (hdrdata->%s);\n" %(field[0]+"_"+str(offset)))
-            fout_source.write(spaces(8) + "return %s;\n" + spaces(4) + "}\n\n" % (field[0]))
+            fout_source.write(spaces(8) + "return %s;\n"%(field[0]) + spaces(4) + "}\n\n")
         fout_source.write(spaces(4) + "void %sLayer::set%s(%s value){\n" % (
         header.capitalize(), str(field[0]).capitalize(), predict_input_type(field[1])))
         fout_source.write(spaces(8) + "%shdr* hdrdata = (%shdr*)m_Data;\n" % (header.lower(), header.lower()))
