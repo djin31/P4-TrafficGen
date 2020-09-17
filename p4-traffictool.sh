@@ -170,11 +170,6 @@ if [[ "$SCAPY" = false  &&  "$MOONGEN" = false &&  "$PCAPPLUSPLUS" = false &&  "
             * ) echo "Please answer yes or no.";;
         esac
     done
-
-    # SCAPY=true
-    # MOONGEN=true
-    # PCAPPLUSPLUS=true
-    # WIRESHARK=true
 fi
 
 if [[ "$SCAPY" = false  &&  "$MOONGEN" = false &&  "$PCAPPLUSPLUS" = false &&  "$WIRESHARK" = false ]] ; then

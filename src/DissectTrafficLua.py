@@ -150,8 +150,6 @@ def make_template(control_graph, header, header_type, destination, header_ports)
             byte_count += int((bit_count + field[1])/8)
 
             bit_count = (bit_count + field[1]) % 8
-            # if (bytefield2>((field[1])/8+1)):
-            #     bytefield2=(field[1])/8+1
 
             fout.write(spaces(8) + "subtree:add(%s_%s,tostring(buffer(%d,%d):bitfield(%d,%d)))\n" %
                        (header_lower, field[0], bytefield1, bytefield2, bitfield1, bitfield2))
