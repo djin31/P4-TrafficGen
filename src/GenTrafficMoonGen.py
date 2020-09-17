@@ -59,35 +59,26 @@ def find_data_headers(headers, header_types):
                     "\nEthernet header detected, would you like the standard ethernet header to be used(y/n) : ").strip()
                 if (temp == 'y'):
                     ETHER_DETECT = True
-                    #print("\nAdd the next layers in the function parseNextLayer of PcapPlusPlus/Packet++/src/EthLayer.cpp\n")
             elif (name == 'ipv4'):
                 temp = input(
                     "\nIPv4 header detected, would you like the standard IPv4 header to be used(y/n) : ").strip()
                 if (temp == 'y'):
                     IPv4_DETECT = True
-                    #print("\nAdd the next layers in the function parseNextLayer of PcapPlusPlus/Packet++/src/IPv4Layer.cpp\n")
-
             elif (name == 'ipv6'):
                 temp = input(
                     "\nIPv6 header detected, would you like the standard IPv6 header to be used(y/n) : ").strip()
                 if (temp == 'y'):
                     IPv6_DETECT = True
-                    #print("\nAdd the next layers in the function parseNextLayer of PcapPlusPlus/Packet++/src/IPv6Layer.cpp\n")
-
             elif (name == 'tcp'):
                 temp = input(
                     "\nTCP header detected, would you like the standard TCP header to be used(y/n) : ").strip()
                 if (temp == 'y'):
                     TCP_DETECT = True
-                    #print("\nAdd the next layers in the function parseNextLayer of PcapPlusPlus/Packet++/src/TcpLayer.cpp\n")
-
             elif (name == 'udp'):
                 temp = input(
                     "\nUDP header detected, would you like the standard UDP header to be used(y/n) : ").strip()
                 if (temp == 'y'):
                     UDP_DETECT = True
-                    #print("\nAdd the next layers in the function parseNextLayer of PcapPlusPlus/Packet++/src/UdpLayer.cpp\n")
-
     header_ports = list(set(header_ports))
 
     header_types = []
@@ -252,7 +243,6 @@ def make_tree(graph):
     for name in state_names:
         if name not in non_roots:
             root = State(name)
-            #copy_of_graph = graph
             find_children(root, graph)
             paths.append(root)
             root.print_state()
@@ -524,8 +514,6 @@ for path in paths:
     find_ethernet(path, rmv_headers, sub_headers)
     print("rmv_headers = ", rmv_headers)
     print("sub_headers = ", sub_headers)
-    # if path.name != "ethernet": # header doesn't start with ethernet. search for ethernet in next levels.
-    # search for ethernet
 rmv_headers = set(rmv_headers)
 sub_headers = set(sub_headers)
 for item in sub_headers:

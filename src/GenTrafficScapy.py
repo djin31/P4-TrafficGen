@@ -170,7 +170,6 @@ def make_tree(graph):
     for name in state_names:
         if name not in non_roots:
             root = State(name)
-            #copy_of_graph = graph
             find_children(root, graph)
             paths.append(root)
             root.print_state()
@@ -220,7 +219,6 @@ def detect_builtin_hdr(headers):
         except NameError:
             pass
         if (headers[header_id]['metadata']) == False:
-            # header_ports.append(correct_name(headers[header_id]['name']))
             if (headers[header_id]['name'] == 'ethernet'):
                 temp = input(
                     "\nEthernet header detected, would you like the standard ethernet header to be used(y/n) : ").strip()
@@ -562,8 +560,6 @@ def make_template(json_data, destination):
             find_ethernet(path, rmv_headers, sub_headers)
             print("rmv_headers = ", rmv_headers)
             print("sub_headers = ", sub_headers)
-            # if path.name != "ethernet": # header doesn't start with ethernet. search for ethernet in next levels.
-            # search for ethernet
             rmv_headers = set(rmv_headers)
             sub_headers = set(sub_headers)
             for item in sub_headers:
@@ -604,8 +600,6 @@ def make_template(json_data, destination):
                             else:
                                 fout.write("bind_layers(%s, %s)\n" % (
                                     capitalise(edge[0]), capitalise(edge[-1])))
-
-        #make_parsers(control_graph, header_ports, fout)
 
         fout.write("\n##packet_list\n")
         make_packets(header_ports, init_states,

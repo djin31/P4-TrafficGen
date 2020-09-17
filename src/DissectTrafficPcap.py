@@ -61,34 +61,26 @@ def find_data_headers(headers, header_types):
                     "\nEthernet header detected, would you like the standard ethernet header to be used(y/n) : ").strip()
                 if temp == 'y':
                     ETHER_DETECT = True
-                    # print("\nAdd the next layers in the function parseNextLayer of PcapPlusPlus/Packet++/src/EthLayer.cpp\n")
             elif name == 'ipv4':
                 temp = input(
                     "\nIPv4 header detected, would you like the standard IPv4 header to be used(y/n) : ").strip()
                 if temp == 'y':
                     IPv4_DETECT = True
-                    # print("\nAdd the next layers in the function parseNextLayer of PcapPlusPlus/Packet++/src/IPv4Layer.cpp\n")
-
             elif name == 'ipv6':
                 temp = input(
                     "\nIPv6 header detected, would you like the standard IPv6 header to be used(y/n) : ").strip()
                 if temp == 'y':
                     IPv6_DETECT = True
-                    # print("\nAdd the next layers in the function parseNextLayer of PcapPlusPlus/Packet++/src/IPv6Layer.cpp\n")
-
             elif name == 'tcp':
                 temp = input(
                     "\nTCP header detected, would you like the standard TCP header to be used(y/n) : ").strip()
                 if temp == 'y':
                     TCP_DETECT = True
-                    # print("\nAdd the next layers in the function parseNextLayer of PcapPlusPlus/Packet++/src/TcpLayer.cpp\n")
-
             elif name == 'udp':
                 temp = input(
                     "\nUDP header detected, would you like the standard UDP header to be used(y/n) : ").strip()
                 if temp == 'y':
                     UDP_DETECT = True
-                    # pint("\nAdd the next layers in the function parseNextLayer of PcapPlusPlus/Packet++/src/UdpLayer.cpp\n")
 
     header_ports = list(set(header_ports))
 
@@ -241,7 +233,6 @@ def make_tree(graph):
     for name in state_names:
         if name not in non_roots:
             root = State(name)
-            #copy_of_graph = graph
             find_children(root, graph)
             paths.append(root)
             root.print_state()
@@ -597,8 +588,6 @@ def make_header_struct(fout_header, check_points, cumulative_hdr_len, header_typ
                 fout_header.write(";\n")
                 fout_header.write("#endif\n")
                 field_parts = []
-        #init_idx = check_points[i] + 1
-            #bias = cumulative_hdr_len[check_points[i]]
         elif i > 0:
             if check_points[i] - check_points[i-1] == 1:
                 fout_header.write(spaces(
@@ -684,10 +673,6 @@ def make_header_struct(fout_header, check_points, cumulative_hdr_len, header_typ
                 fout_header.write(";\n")
                 fout_header.write("#endif\n")
                 field_parts = []
-                #fout_header.write("%s : %s" %(header_type["fields"][init_idx][0], header_type["fields"][init_idx][1]))
-                # for field in header_type["fields"][init_idx+1 : check_points[i]+1]:
-                #    fout_header.write(",\n" + spaces(12) + " " + spaces(4) + " %s : %s" %(field[0],field[1]))
-                # fout_header.write(";\n")
         init_idx = check_points[i] + 1
         bias = cumulative_hdr_len[check_points[i]]
     return field_sgmnt_lst
@@ -749,15 +734,6 @@ def make_template(control_graph, header, header_type, destination, header_ports)
 
     field_sgmnt_lst = make_header_struct(
         fout_header, check_points, cumulative_hdr_len, header_type)
-
-    '''
-    for field in header_type["fields"]:
-        try:
-            fout_header.write(spaces(8) + "%s " + spaces(4) + " %s;\n" %(predict_type(field[1]),field[0]))
-        except TypeError:
-            field[1] = int(input('Variable length field "' + field[0] + '" detected in "' + header + '". Enter its length\n'))
-            fout_header.write(spaces(8) + "%s " + spaces(4) + " %s;\n" %(predict_type(field[1]),field[0]))
-    '''
 
     fout_header.write(spaces(4) + "};\n\n")
 
@@ -836,7 +812,6 @@ def make_template(control_graph, header, header_type, destination, header_ports)
             if (field[1] == 24 or field[1] == 40 or field[1] == 48):
                 fout_source.write(
                     spaces(8) + "UINT%d_HTON(%s,hdrdata->%s);\n" % (field[1], field[0], field[0]))
-                # fout_source.write(spaces(8) + "return (%s)(UINT%d_GET(%s));\n" + spaces(4) + "}\n\n" %(predict_input_type(field[1]),field[1],field[0]))
                 fout_source.write(
                     spaces(8) + "%s return_val = UINT%d_GET(%s);\n" % (predict_input_type(field[1]), field[1], field[0]))
                 fout_source.write(
@@ -900,8 +875,6 @@ def make_template(control_graph, header, header_type, destination, header_ports)
     fout_source.write(spaces(12) + "return;\n\n")
 
     if (len(next_transitions) > 0):
-        # fout_source.write(spaces(8) + "%shdr* hdrdata = get%sHeader();\n" % (header.lower(), header.capitalize()))
-        # print('transition_key = ', transition_key)
         transition_dict = {}
         for tk in transition_key:
             for field in header_type["fields"]:
@@ -910,10 +883,7 @@ def make_template(control_graph, header, header_type, destination, header_ports)
                         predict_input_type(field[1]), tk, header.capitalize(), str(field[0]).capitalize()))
                     transition_dict[field[0]] = nibble(field[1])
                     break
-        # fout_source.write(spaces(8) + "%s %s = %s(hdrdata->%s);\n" + spaces(8) + "" % (
-        # predict_type(field[1]), transition_key, host_network_conversion(field), transition_key))
         for transition in next_transitions[:-1]:
-            # print transition
             init_idx = 2
             fout_source.write(spaces(8) + "if (%s == 0x%s" % (
                 transition_key[0], transition[1][init_idx:init_idx+transition_dict[transition_key[0]]]))
@@ -980,8 +950,6 @@ for path in paths:
     find_ethernet(path, rmv_headers, sub_headers)
     print("rmv_headers = ", rmv_headers)
     print("sub_headers = ", sub_headers)
-    # if path.name != "ethernet": # header doesn't start with ethernet. search for ethernet in next levels.
-    # search for ethernet
 rmv_headers = set(rmv_headers)
 sub_headers = set(sub_headers)
 for item in sub_headers:
