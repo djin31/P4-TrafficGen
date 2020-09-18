@@ -108,7 +108,6 @@ def find_data_headers(headers, header_types):
                     hdr_field_cnt += 1
                 except:
                     pass
-            tmp_dict = {'length': total_hdr_length, 'count': hdr_field_cnt}
 
     return header_ports, header_types
 
@@ -280,7 +279,7 @@ def handle_special_len(fout_header, field_sgmnt_lst, l, fields, init_idx, end_id
                 cap -= size
         for i in range(init_idx+1, break_point):
             size = fields[i][1]
-            cap = field_segmenter(fout_header, field, cap,
+            cap = field_segmenter(fout_header, fields[i], cap,
                                   size, field_parts, tmp_list, field_sgmnt_lst)
             till_full -= fields[i][1]
         size = fields[break_point][1]
@@ -581,7 +580,6 @@ def gen_hex_mask_cumulative(field_segments, total_len):
 
 def make_template(control_graph, header, header_type, destination, header_ports):
     '''makes the actual lua script given the relevant header type and next and previous state transition information'''
-    headerUpper = header.upper()
     fout_header = open(destination + ".h", "w")
     fout_source = open(destination + ".cpp", "w")
 
