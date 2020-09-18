@@ -2,6 +2,20 @@
 import json
 
 
+# global variables for common header types detection
+ETHER_DETECT = False
+IPv4_DETECT = False
+IPv6_DETECT = False
+TCP_DETECT = False
+UDP_DETECT = False
+
+global input
+try:
+    input = raw_input
+except NameError:
+    pass
+
+
 def read_jsondata(filename):
     '''open file to load json data'''
     try:
@@ -67,6 +81,42 @@ def sanitize_headers(headers):
         unique_header_names.append(header['name'])
         unique_headers.append(header)
     return unique_header_names, unique_headers
+
+
+def detect_builtin_hdr(headers):
+    global ETHER_DETECT
+    global IPv4_DETECT
+    global IPv6_DETECT
+    global TCP_DETECT
+    global UDP_DETECT
+
+    for header in headers:
+        if (header['name'] == 'ethernet'):
+            temp = input(
+                "\nEthernet header detected, would you like the standard ethernet header to be used(y/n) : ").strip()
+            if (temp == 'y'):
+                ETHER_DETECT = True
+        elif (header['name'] == 'ipv4'):
+            temp = input(
+                "\nIPv4 header detected, would you like the standard IPv4 header to be used(y/n) : ").strip()
+            if (temp == 'y'):
+                IPv4_DETECT = True
+        elif (header['name'] == 'ipv6'):
+            temp = input(
+                "\nIPv6 header detected, would you like the standard IPv6 header to be used(y/n) : ").strip()
+            if (temp == 'y'):
+                IPv6_DETECT = True
+        elif (header['name'] == 'tcp'):
+            temp = input(
+                "\nTCP header detected, would you like the standard TCP header to be used(y/n) : ").strip()
+            if (temp == 'y'):
+                TCP_DETECT = True
+        elif (header['name'] == 'udp'):
+            temp = input(
+                "\nUDP header detected, would you like the standard UDP header to be used(y/n) : ").strip()
+            if (temp == 'y'):
+                UDP_DETECT = True
+    return
 
 
 class State:

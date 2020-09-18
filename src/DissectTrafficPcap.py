@@ -5,12 +5,6 @@ import math
 from tabulate import tabulate
 from common import *
 
-# global variables for common header types
-ETHER_DETECT = False
-IPv4_DETECT = False
-IPv6_DETECT = False
-TCP_DETECT = False
-UDP_DETECT = False
 
 DEBUG = False
 
@@ -42,11 +36,6 @@ def find_data_headers(headers, header_types):
     header_dict = {}
 
     for header_id in range(len(headers)):
-        global input
-        try:
-            input = raw_input
-        except NameError:
-            pass
         if not (headers[header_id]['metadata']):
             name = headers[header_id]['name']
             if name.find('[') != (-1):

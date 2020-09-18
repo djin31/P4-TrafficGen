@@ -6,13 +6,6 @@ from common import *
 # Maximum possible headers within a packet, hyperparameter with default value as 10
 MAX_PATH_LENGTH = 10
 
-# global variables for common header types detection
-ETHER_DETECT = False
-IPv4_DETECT = False
-IPv6_DETECT = False
-TCP_DETECT = False
-UDP_DETECT = False
-
 DEBUG = False
 
 # multi-headers stores headers that appear in the form of array
@@ -40,12 +33,6 @@ if (len(sys.argv) > 3):
         DEBUG = True
 
 start_with_eth = sys.argv[-1].lower()
-
-global input
-try:
-    input = raw_input
-except NameError:
-    pass
 
 
 def possible_paths(init, control_graph, length_till_now, rmv_headers):
@@ -111,41 +98,6 @@ def detect_field_type(field):
         return ("XBitField('"+field[0]+"', 0, " + str(field[1])+")")
 
 
-def detect_builtin_hdr(headers):
-    global ETHER_DETECT
-    global IPv4_DETECT
-    global IPv6_DETECT
-    global TCP_DETECT
-    global UDP_DETECT
-    for header in headers:
-        if (header['name'] == 'ethernet'):
-            temp = input(
-                "\nEthernet header detected, would you like the standard ethernet header to be used(y/n) : ").strip()
-            if (temp == 'y'):
-                ETHER_DETECT = True
-        elif (header['name'] == 'ipv4'):
-            temp = input(
-                "\nIPv4 header detected, would you like the standard IPv4 header to be used(y/n) : ").strip()
-            if (temp == 'y'):
-                IPv4_DETECT = True
-        elif (header['name'] == 'ipv6'):
-            temp = input(
-                "\nIPv6 header detected, would you like the standard IPv6 header to be used(y/n) : ").strip()
-            if (temp == 'y'):
-                IPv6_DETECT = True
-        elif (header['name'] == 'tcp'):
-            temp = input(
-                "\nTCP header detected, would you like the standard TCP header to be used(y/n) : ").strip()
-            if (temp == 'y'):
-                TCP_DETECT = True
-        elif (header['name'] == 'udp'):
-            temp = input(
-                "\nUDP header detected, would you like the standard UDP header to be used(y/n) : ").strip()
-            if (temp == 'y'):
-                UDP_DETECT = True
-    return
-
-
 def make_header(headers, header_ports, header_types, header_id, checksums, calculations, control_graph, fout):
     fout.write("class %s(Packet):\n" %
                (capitalise(headers[header_id]['name'])))
@@ -185,12 +137,6 @@ def make_header(headers, header_ports, header_types, header_id, checksums, calcu
 
 
 def make_classes(data, control_graph, header_ports, headers, rmv_headers, fout):
-    global ETHER_DETECT
-    global IPv4_DETECT
-    global IPv6_DETECT
-    global TCP_DETECT
-    global UDP_DETECT
-
     header_types = data["header_types"]
     checksums = data["checksums"]
     calculations = data["calculations"]
@@ -408,12 +354,6 @@ def correct_metadata(header_ports, control_graph, init_states):
 
 def make_template(json_data, destination):
     '''top level module that calls other functions, accepts the json_data and the file destination as input'''
-    global ETHER_DETECT
-    global IPv4_DETECT
-    global IPv6_DETECT
-    global TCP_DETECT
-    global UDP_DETECT
-
     try:
         fout = open(destination, 'w')
         fout.write("from scapy.all import *\n")

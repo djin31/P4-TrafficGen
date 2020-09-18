@@ -6,13 +6,6 @@ from common import *
 DEBUG = False
 MAX_PATH_LENGTH = 10
 
-# to maintain compatibility
-global input
-try:
-    input = raw_input
-except NameError:
-    pass
-
 # open file to load json data
 # standardize destination path
 data = read_jsondata(sys.argv[1])
