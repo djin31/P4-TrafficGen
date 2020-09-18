@@ -299,8 +299,6 @@ def make_parsers(control_graph, header_type, header, fout):
             if (edge[1] != None):
                 transition_key = edge[1]
                 next_transitions.append((edge[-1], edge[-2]))
-            else:
-                default_next_transition = edge[-1]
 
     if (len(next_transitions) > 0):
         fout.write("\n" + spaces(4) +
@@ -459,7 +457,6 @@ def make_template(json_data, destination):
             find_ethernet(path, rmv_headers, sub_headers, ETHER_DETECT)
             print("rmv_headers = ", rmv_headers)
             print("sub_headers = ", sub_headers)
-            # search for ethernet
             rmv_headers = set(rmv_headers)
             sub_headers = set(sub_headers)
             for item in sub_headers:

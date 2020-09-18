@@ -560,10 +560,6 @@ def make_header_struct(fout_header, check_points, cumulative_hdr_len, header_typ
                 fout_header.write(";\n")
                 fout_header.write("#endif\n")
                 field_parts = []
-                #fout_header.write("%s : %s" %(header_type["fields"][init_idx][0], header_type["fields"][init_idx][1]))
-                # for field in header_type["fields"][init_idx+1 : check_points[i]+1]:
-                #    fout_header.write(",\n" + spaces(12) + " " + spaces(4) + " %s : %s" %(field[0],field[1]))
-                # fout_header.write(";\n")
         init_idx = check_points[i] + 1
         bias = cumulative_hdr_len[check_points[i]]
     return field_sgmnt_lst
@@ -619,15 +615,6 @@ def make_template(control_graph, header, header_type, destination, header_ports)
 
     field_sgmnt_lst = make_header_struct(
         fout_header, check_points, cumulative_hdr_len, header_type)
-
-    '''
-    for field in header_type["fields"]:
-        try:
-            fout_header.write(spaces(8) + "%s " + spaces(4) + " %s;\n" %(predict_type(field[1]),field[0]))
-        except TypeError:
-            field[1] = int(input('Variable length field "' + field[0] + '" detected in "' + header + '". Enter its length\n'))
-            fout_header.write(spaces(8) + "%s " + spaces(4) + " %s;\n" %(predict_type(field[1]),field[0]))
-    '''
 
     fout_header.write(spaces(4) + "};\n\n")
 
