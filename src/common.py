@@ -57,6 +57,18 @@ def delete_obj(del_list, orig_list):
         orig_list.remove(item)
 
 
+def sanitize_headers(headers):
+    unique_header_names, unique_headers = [], []
+    for header in headers:
+        if header['metadata']:
+            continue
+
+        header['name'] = header['name'].split('[')[0]
+        unique_header_names.append(header['name'])
+        unique_headers.append(header)
+    return unique_header_names, unique_headers
+
+
 class State:
     def __init__(self, name):
         self.name = name

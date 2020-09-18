@@ -41,6 +41,12 @@ if (len(sys.argv) > 3):
 
 start_with_eth = sys.argv[-1].lower()
 
+global input
+try:
+    input = raw_input
+except NameError:
+    pass
+
 
 def possible_paths(init, control_graph, length_till_now, rmv_headers):
     '''find all possible header orderings that are valid'''
@@ -111,38 +117,32 @@ def detect_builtin_hdr(headers):
     global IPv6_DETECT
     global TCP_DETECT
     global UDP_DETECT
-    for header_id in range(len(headers)):
-        global input
-        try:
-            input = raw_input
-        except NameError:
-            pass
-        if (headers[header_id]['metadata']) == False:
-            if (headers[header_id]['name'] == 'ethernet'):
-                temp = input(
-                    "\nEthernet header detected, would you like the standard ethernet header to be used(y/n) : ").strip()
-                if (temp == 'y'):
-                    ETHER_DETECT = True
-            elif (headers[header_id]['name'] == 'ipv4'):
-                temp = input(
-                    "\nIPv4 header detected, would you like the standard IPv4 header to be used(y/n) : ").strip()
-                if (temp == 'y'):
-                    IPv4_DETECT = True
-            elif (headers[header_id]['name'] == 'ipv6'):
-                temp = input(
-                    "\nIPv6 header detected, would you like the standard IPv6 header to be used(y/n) : ").strip()
-                if (temp == 'y'):
-                    IPv6_DETECT = True
-            elif (headers[header_id]['name'] == 'tcp'):
-                temp = input(
-                    "\nTCP header detected, would you like the standard TCP header to be used(y/n) : ").strip()
-                if (temp == 'y'):
-                    TCP_DETECT = True
-            elif (headers[header_id]['name'] == 'udp'):
-                temp = input(
-                    "\nUDP header detected, would you like the standard UDP header to be used(y/n) : ").strip()
-                if (temp == 'y'):
-                    UDP_DETECT = True
+    for header in headers:
+        if (header['name'] == 'ethernet'):
+            temp = input(
+                "\nEthernet header detected, would you like the standard ethernet header to be used(y/n) : ").strip()
+            if (temp == 'y'):
+                ETHER_DETECT = True
+        elif (header['name'] == 'ipv4'):
+            temp = input(
+                "\nIPv4 header detected, would you like the standard IPv4 header to be used(y/n) : ").strip()
+            if (temp == 'y'):
+                IPv4_DETECT = True
+        elif (header['name'] == 'ipv6'):
+            temp = input(
+                "\nIPv6 header detected, would you like the standard IPv6 header to be used(y/n) : ").strip()
+            if (temp == 'y'):
+                IPv6_DETECT = True
+        elif (header['name'] == 'tcp'):
+            temp = input(
+                "\nTCP header detected, would you like the standard TCP header to be used(y/n) : ").strip()
+            if (temp == 'y'):
+                TCP_DETECT = True
+        elif (header['name'] == 'udp'):
+            temp = input(
+                "\nUDP header detected, would you like the standard UDP header to be used(y/n) : ").strip()
+            if (temp == 'y'):
+                UDP_DETECT = True
     return
 
 
@@ -184,18 +184,6 @@ def make_header(headers, header_ports, header_types, header_id, checksums, calcu
             4) + "#update %s over %s using %s in post_build method\n\n" % (target, fields, algo))
 
 
-def remove_number(headers):
-    unique_headers = {}
-    for header in headers:
-        if header['metadata']:
-            continue
-        name = header['name']
-        if name.find('[') != (-1):
-            header['name'] = name[:name.find('[')]
-        unique_headers[header['name']] = header
-    return unique_headers.keys(), unique_headers.values()
-
-
 def make_classes(data, control_graph, header_ports, headers, rmv_headers, fout):
     global ETHER_DETECT
     global IPv4_DETECT
@@ -208,12 +196,6 @@ def make_classes(data, control_graph, header_ports, headers, rmv_headers, fout):
     calculations = data["calculations"]
 
     for header_id in range(len(headers)):
-        global input
-        try:
-            input = raw_input
-        except NameError:
-            pass
-
         if (headers[header_id]['metadata']) == False:
             if (headers[header_id]['name'] == 'ethernet'):
                 if (ETHER_DETECT == False):
@@ -435,14 +417,14 @@ def make_template(json_data, destination):
     try:
         fout = open(destination, 'w')
         fout.write("from scapy.all import *\n")
-        header_ports, headers = remove_number(data["headers"])
-        detect_builtin_hdr(headers)
-
         fout.write("\n##class definitions\n")
+
+        header_ports, headers = sanitize_headers(data["headers"])
+        detect_builtin_hdr(headers)
 
         # building metadata
         control_graph = correct_graph(
-            make_control_graph_multi(json_data["parsers"], DEBUG))
+            make_control_graph_multi(data["parsers"], DEBUG))
         init_states = []
         for parser in json_data["parsers"]:
             init_states.append(search_state(parser, parser["init_state"]))
