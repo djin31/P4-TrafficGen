@@ -169,10 +169,6 @@ def host_network_conversion(field):
     return "-- fill blank here"
 
 
-def gen_hex_mask(rbit_num, length):
-    return hex(int('0b' + '1'*length + '0'*rbit_num, 2))
-
-
 def make_template(control_graph, header, header_type, destination, header_ports, local_name):
     '''makes the actual lua script given the relevant header type and next and previous state transition information'''
     headerUpper = local_name + header.lower()

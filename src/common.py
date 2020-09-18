@@ -131,6 +131,10 @@ def find_ethernet(node, rmv_headers, sub_headers, ehter_detect):
         return
 
 
+def gen_hex_mask(zeroes_len, ones_len):
+    return hex(int('0b' + '1'*ones_len + '0'*zeroes_len, 2))
+
+
 def valid_state_name(state):
     '''assign valid name to state depending on which header it extracts'''
     if len(state["parser_ops"]) > 0:
