@@ -170,12 +170,7 @@ def host_network_conversion(field):
 
 
 def gen_hex_mask(rbit_num, length):
-    mask = '0b'
-    for i in range(length):
-        mask = mask + '1'
-    for i in range(rbit_num):
-        mask = mask + '0'
-    return hex(int(mask, 2))
+    return hex(int('0b' + '1'*length + '0'*rbit_num, 2))
 
 
 def make_template(control_graph, header, header_type, destination, header_ports, local_name):
