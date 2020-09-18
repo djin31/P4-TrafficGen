@@ -151,24 +151,6 @@ def predict_type(field):
     return "-- fill blank here " + str(field[1])
 
 
-def network_host_conversion(field):
-    if (field[1] <= 8):
-        return ""
-    if (field[1] <= 16):
-        return "ntoh16"
-    if (field[1] <= 24):
-        return ""
-    if (field[1] <= 32):
-        return "ntoh"
-    if (field[1] <= 40):
-        return ""
-    if (field[1] <= 48):
-        return ""
-    if (field[1] <= 64):
-        return "hton64"
-    return "-- fill blank here"
-
-
 def host_network_conversion(field):
     if (field[1] <= 8):
         return ""
@@ -185,107 +167,6 @@ def host_network_conversion(field):
     if (field[1] <= 64):
         return "hton64"
     return "-- fill blank here"
-
-
-def nibble(size):
-    if (size <= 8):
-        return 2
-    if (size <= 16):
-        return 4
-    if (size <= 24):
-        return 6
-    if (size <= 32):
-        return 8
-    if (size <= 40):
-        return 10
-    if (size <= 48):
-        return 12
-    if (size <= 56):
-        return 14
-    if (size <= 64):
-        return 16
-    return "-- fill blank here"
-
-
-class State:
-    def __init__(self, name):
-        self.name = name
-        self.children = []
-
-    def print_state(self):
-        print("node's name: ", self.name)
-        print("node's children: ", [
-              self.children[i].name for i in range(len(self.children))])
-
-
-def delete_obj(del_list, orig_list):
-    for item in del_list:
-        orig_list.remove(item)
-
-
-def find_children(root, nodes):
-    if len(nodes) == 0:
-        return
-    else:
-        children = []
-        del_list = []
-        for node in nodes:
-            if node[0] == root.name:
-                children.append(node[-1])
-                del_list.append(node)
-        delete_obj(del_list, nodes)
-        children = set(children)
-        for child in children:
-            state = State(child)
-            find_children(state, nodes)
-            root.children.append(state)
-        return
-
-
-def make_tree(graph):
-    paths = []
-    state_names = [edge[0] for edge in graph]
-    state_names = set(state_names)
-    states = []
-    non_roots = [edge[-1] for edge in graph]
-    non_roots = set(non_roots)
-    for name in state_names:
-        if name not in non_roots:
-            root = State(name)
-            #copy_of_graph = graph
-            find_children(root, graph)
-            paths.append(root)
-            root.print_state()
-    return paths
-
-
-def find_eth_subhdr(node, sub_headers):
-    if len(node.children) == 0:
-        if node.name != "final":
-            sub_headers.append(node.name)
-        return
-    else:
-        for child in node.children:
-            if child.name != "final":
-                sub_headers.append(child.name)
-            find_eth_subhdr(child, sub_headers)
-        return
-
-
-def find_ethernet(node, rmv_headers, sub_headers):
-    if node.name == "ethernet" and ETHER_DETECT == True:
-        find_eth_subhdr(node, sub_headers)
-        return
-    elif len(node.children) == 0:
-        if node.name != "final":
-            rmv_headers.append(node.name)
-        return
-    else:
-        if node.name != "scalars" and node.name != "final":
-            rmv_headers.append(node.name)
-        for child in node.children:
-            find_ethernet(child, rmv_headers, sub_headers)
-        return
 
 
 def gen_hex_mask(rbit_num, length):
@@ -521,7 +402,7 @@ paths = make_tree(copy_of_graph)
 rmv_headers = []
 sub_headers = []
 for path in paths:
-    find_ethernet(path, rmv_headers, sub_headers)
+    find_ethernet(path, rmv_headers, sub_headers, ETHER_DETECT)
     print("rmv_headers = ", rmv_headers)
     print("sub_headers = ", sub_headers)
     # if path.name != "ethernet": # header doesn't start with ethernet. search for ethernet in next levels.
