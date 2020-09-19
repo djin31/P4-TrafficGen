@@ -278,15 +278,6 @@ def find_ethernet(node, rmv_headers, sub_headers):
         return
 
 
-def gen_hex_mask(rbit_num, length):
-    mask = '0b'
-    for i in range(length):
-        mask = mask + '1'
-    for i in range(rbit_num):
-        mask = mask + '0'
-    return hex(int(mask, 2))
-
-
 def make_template(control_graph, header, header_type, destination, header_ports, local_name):
     '''makes the actual lua script given the relevant header type and next and previous state transition information'''
     headerUpper = local_name + header.lower()

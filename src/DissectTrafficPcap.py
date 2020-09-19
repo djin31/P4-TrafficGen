@@ -678,17 +678,12 @@ def make_header_struct(fout_header, check_points, cumulative_hdr_len, header_typ
     return field_sgmnt_lst
 
 
-def gen_hex_mask(field_segments, total_len):
+def gen_hex_mask_cumulative(field_segments, total_len):
     hex_mask = []
     init_val = 0
     for idx in range(len(field_segments)):
         init_val += field_segments[idx]
-        mask = '0b'
-        for i in range(field_segments[idx]):
-            mask = mask + '1'
-        for i in range(total_len - init_val):
-            mask = mask + '0'
-        hex_mask.append(hex(int(mask, 2)))
+        hex_mask.append(gen_hex_mask(total_len - init_val, field_segments[idx]))
     return hex_mask
 
 
@@ -856,7 +851,7 @@ def make_template(control_graph, header, header_type, destination, header_ports)
                 fout_source.write(spaces(8) + "hdrdata->%s = %s(value);\n" %
                                   (field[0], host_network_conversion(field)))
         elif len(field_segments) > 1:
-            hex_mask = gen_hex_mask(field_segments, field[1])
+            hex_mask = gen_hex_mask_cumulative(field_segments, field[1])
             offset = 1
             init_val = 0
             for i in range(len(field_segments[:-1])):

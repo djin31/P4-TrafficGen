@@ -129,3 +129,7 @@ def make_control_graph_multi(parsers, DEBUG):
 
 def spaces(count):
     return (" " * count)
+
+
+def gen_hex_mask(rbit_num, length):
+    return hex(int('0b' + '1'*length + '0'*rbit_num, 2))
