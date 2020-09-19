@@ -293,14 +293,14 @@ def make_template(control_graph, header, header_type, destination, header_ports,
     fout.write("%s.headerFormat = [[\n" % (headerUpper))
     for field in header_type["fields"][:-1]:
         try:
-            fout.write(spaces(4) + "%s " + spaces(4) + " %s;\n" %
-                       (predict_type(field), field[0]))
+            fout.write(spaces(4) + "%s " % (predict_type(field)) + spaces(4) + " %s;\n" %
+                       (field[0]))
         except TypeError:
             variable_fields.append(field[0])
     field = header_type["fields"][-1]
     try:
-        fout.write(spaces(4) + "%s " + spaces(4) + " %s;\n" %
-                   (predict_type(field), field[0]))
+        fout.write(spaces(4) + "%s " % (predict_type(field)) + spaces(4) + " %s;\n" %
+                   (field[0]))
     except TypeError:
         variable_fields.append(field[0])
     fout.write("]]\n")
@@ -440,8 +440,8 @@ def make_template(control_graph, header, header_type, destination, header_ports,
                 offset += 1
             rbit_num -= transition_dict[transition_key[-1]]
             mask = gen_hex_mask(rbit_num, transition_dict[transition_key[-1]])
-            fout.write(" and key%s == band(value, %sULL) then\n" + spaces(12) +
-                       "return name\n" + spaces(8) + "end\n" + spaces(4) + "end\n" % (offset, mask))
+            fout.write(" and key%s == band(value, %sULL) then\n" % (offset, mask) + spaces(12) +
+                       "return name\n" + spaces(8) + "end\n" + spaces(4) + "end\n")
 
     if (default_next_transition != None):
         fout.write(spaces(4) + "return %s\n" % (default_next_transition))
@@ -560,9 +560,9 @@ def remove_headers(l):
     return l_dash
 
 
-for k, v in d.iteritems():
+for k, v in d.items():
     d[k] = remove_headers(d[k])
-table = [[file_map[k], v] for k, v in d.iteritems() if len(v) > 0]
+table = [[file_map[k], v] for k, v in d.items() if len(v) > 0]
 print ("---------------------------------------------------------------------")
 print (tabulate(table, headers=[
        'Standard headers\' src file to be modified', 'Headers to be added in resolveNextHeader']))

@@ -164,7 +164,6 @@ def make_tree(graph):
     paths = []
     state_names = [edge[0] for edge in graph]
     state_names = set(state_names)
-    states = []
     non_roots = [edge[-1] for edge in graph]
     non_roots = set(non_roots)
     for name in state_names:
@@ -400,8 +399,6 @@ def make_parsers(control_graph, header_type, header, fout):
             if (edge[1] != None):
                 transition_key = edge[1]
                 next_transitions.append((edge[-1], edge[-2]))
-            else:
-                default_next_transition = edge[-1]
 
     if (len(next_transitions) > 0):
         fout.write("\n" + spaces(4) +
