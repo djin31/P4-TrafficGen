@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import json
+import config
 
 
 def read_jsondata(filename):
@@ -57,7 +58,7 @@ def search_header_type(header_types, name):
             return header_type
 
 
-def make_control_graph(parsers, DEBUG):
+def make_control_graph(parsers):
     '''make a control graph for all possible state transitions
     returns the list of edges in graph'''
     graph = []
@@ -81,14 +82,14 @@ def make_control_graph(parsers, DEBUG):
                         parser, state["transitions"][0]["next_state"])])
                 else:
                     graph.append([name, None, None, "final"])
-    if (DEBUG):
+    if (config.DEBUG):
         print("\nEdges in the control_graph\n")
         for i in graph:
             print(i)
     return graph
 
 
-def make_control_graph_multi(parsers, DEBUG):
+def make_control_graph_multi(parsers):
     graph = []
     for parser in parsers:
         for state in parser["parse_states"]:
@@ -120,7 +121,7 @@ def make_control_graph_multi(parsers, DEBUG):
                         parser, state["transitions"][0]["next_state"])])
                 else:
                     graph.append([name, None, None, "final"])
-    if (DEBUG):
+    if (config.DEBUG):
         print("\nEdges in the control_graph\n")
         for i in graph:
             print(i)

@@ -1,10 +1,9 @@
 import json
 import sys
 import os
+import config
 from common import *
 
-DEBUG = False
-MAX_PATH_LENGTH = 10
 
 # to maintain compatibility
 global input
@@ -23,7 +22,7 @@ if (DESTINATION[-1] != '/'):
 # debug mode activated or not
 if (len(sys.argv) > 3):
     if (sys.argv[-1] == '-d'):
-        DEBUG = True
+        config.DEBUG = True
 
 # variable to store the tables created in the script
 tables_created = []
@@ -61,7 +60,7 @@ def find_data_headers(headers, header_types):
     for i in header_ports:
         header_types.append(header_dict[i])
 
-    if (DEBUG):
+    if (config.DEBUG):
         print("\nHeaders \n")
         for i in range(len(header_ports)):
             print (header_ports[i], header_types[i]["name"])
@@ -72,7 +71,7 @@ def possible_paths(init, control_graph, length_till_now):
     '''find all possible header orderings that are valid'''
     if (init == 'final'):
         return [['final']]
-    if (length_till_now == MAX_PATH_LENGTH):
+    if (length_till_now == config.MAX_PATH_LENGTH):
         return []
     temp = []
     possible_stops = [i[-1] for i in control_graph if i[0] == init]
@@ -172,7 +171,7 @@ def make_template(control_graph, header, header_type, destination, header_ports)
             fout.write(spaces(8) + "subtree:add(%s_%s,tostring(buffer(%d,%d):bitfield(%d,%d)))\n" %
                        (header_lower, field[0], bytefield1, bytefield2, bitfield1, bitfield2))
 
-    if (DEBUG):
+    if (config.DEBUG):
         print (header, header_type["name"], next_state_key, transition_param)
 
     if (next_state_key != '' and next_state_key != None):
@@ -213,7 +212,7 @@ def make_template(control_graph, header, header_type, destination, header_ports)
                 fout.write("my_table:add(%s,%s)\n" % (entry[2], header_lower))
 
 
-control_graph = make_control_graph(data["parsers"], DEBUG)
+control_graph = make_control_graph(data["parsers"])
 header_ports, header_types = find_data_headers(
     data["headers"], data["header_types"])
 header_ports, header_types = topo_sort_headers(
@@ -234,7 +233,7 @@ for i in range(len(header_ports)):
     make_template(
         control_graph, header_ports[i], header_types[i], destination, header_ports)
 
-if (DEBUG):
+if (config.DEBUG):
     print ("\nTables created are\n")
     for i in tables_created:
         print (i)

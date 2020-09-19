@@ -1,19 +1,9 @@
 import json
 import sys
 import re
+import config
 from common import *
 
-# Maximum possible headers within a packet, hyperparameter with default value as 10
-MAX_PATH_LENGTH = 10
-
-# global variables for common header types detection
-ETHER_DETECT = False
-IPv4_DETECT = False
-IPv6_DETECT = False
-TCP_DETECT = False
-UDP_DETECT = False
-
-DEBUG = False
 
 # multi-headers stores headers that appear in the form of array
 # array_match is the regex to match for arrays
@@ -30,14 +20,14 @@ if (DESTINATION[-1] != '/'):
 # check if max path length has been set
 if (len(sys.argv) > 3):
     try:
-        MAX_PATH_LENGTH = int(sys.argv[3])
+        config.MAX_PATH_LENGTH = int(sys.argv[3])
     except ValueError:
         pass
 
 # check if debug mode activated or not
 if (len(sys.argv) > 3):
     if (sys.argv[-2] == '-d'):
-        DEBUG = True
+        config.DEBUG = True
 
 start_with_eth = sys.argv[-1].lower()
 
@@ -46,7 +36,7 @@ def possible_paths(init, control_graph, length_till_now, rmv_headers):
     '''find all possible header orderings that are valid'''
     if (init == 'final'):
         return [['final']]
-    if (length_till_now == MAX_PATH_LENGTH):
+    if (length_till_now == config.MAX_PATH_LENGTH):
         return []
     if (init in rmv_headers):
         return[]
@@ -189,7 +179,7 @@ def find_eth_subhdr(node, sub_headers):
 
 
 def find_ethernet(node, rmv_headers, sub_headers):
-    if node.name == "ethernet" or node.name == "Ether" and ETHER_DETECT == True:
+    if node.name == "ethernet" or node.name == "Ether" and config.ETHER_DETECT == True:
         find_eth_subhdr(node, sub_headers)
         return
     elif len(node.children) == 0:
@@ -205,12 +195,6 @@ def find_ethernet(node, rmv_headers, sub_headers):
 
 
 def detect_builtin_hdr(headers):
-
-    global ETHER_DETECT
-    global IPv4_DETECT
-    global IPv6_DETECT
-    global TCP_DETECT
-    global UDP_DETECT
     for header_id in range(len(headers)):
         global input
         try:
@@ -222,27 +206,27 @@ def detect_builtin_hdr(headers):
                 temp = input(
                     "\nEthernet header detected, would you like the standard ethernet header to be used(y/n) : ").strip()
                 if (temp == 'y'):
-                    ETHER_DETECT = True
+                    config.ETHER_DETECT = True
             elif (headers[header_id]['name'] == 'ipv4'):
                 temp = input(
                     "\nIPv4 header detected, would you like the standard IPv4 header to be used(y/n) : ").strip()
                 if (temp == 'y'):
-                    IPv4_DETECT = True
+                    config.IPv4_DETECT = True
             elif (headers[header_id]['name'] == 'ipv6'):
                 temp = input(
                     "\nIPv6 header detected, would you like the standard IPv6 header to be used(y/n) : ").strip()
                 if (temp == 'y'):
-                    IPv6_DETECT = True
+                    config.IPv6_DETECT = True
             elif (headers[header_id]['name'] == 'tcp'):
                 temp = input(
                     "\nTCP header detected, would you like the standard TCP header to be used(y/n) : ").strip()
                 if (temp == 'y'):
-                    TCP_DETECT = True
+                    config.TCP_DETECT = True
             elif (headers[header_id]['name'] == 'udp'):
                 temp = input(
                     "\nUDP header detected, would you like the standard UDP header to be used(y/n) : ").strip()
                 if (temp == 'y'):
-                    UDP_DETECT = True
+                    config.UDP_DETECT = True
     return
 
 
@@ -297,12 +281,6 @@ def remove_number(headers):
 
 
 def make_classes(data, control_graph, header_ports, headers, rmv_headers, fout):
-    global ETHER_DETECT
-    global IPv4_DETECT
-    global IPv6_DETECT
-    global TCP_DETECT
-    global UDP_DETECT
-
     header_types = data["header_types"]
     checksums = data["checksums"]
     calculations = data["calculations"]
@@ -316,7 +294,7 @@ def make_classes(data, control_graph, header_ports, headers, rmv_headers, fout):
 
         if (headers[header_id]['metadata']) == False:
             if (headers[header_id]['name'] == 'ethernet'):
-                if (ETHER_DETECT == False):
+                if (config.ETHER_DETECT == False):
                     if start_with_eth == 'true':
                         if headers[header_id]['name'] not in rmv_headers:
                             make_header(headers, header_ports, header_types, header_id,
@@ -325,7 +303,7 @@ def make_classes(data, control_graph, header_ports, headers, rmv_headers, fout):
                         make_header(headers, header_ports, header_types, header_id,
                                     checksums, calculations, control_graph, fout)
             elif (headers[header_id]['name'] == 'ipv4'):
-                if (IPv4_DETECT == False):
+                if (config.IPv4_DETECT == False):
                     if start_with_eth == 'true':
                         if headers[header_id]['name'] not in rmv_headers:
                             make_header(headers, header_ports, header_types, header_id,
@@ -334,7 +312,7 @@ def make_classes(data, control_graph, header_ports, headers, rmv_headers, fout):
                         make_header(headers, header_ports, header_types, header_id,
                                     checksums, calculations, control_graph, fout)
             elif (headers[header_id]['name'] == 'ipv6'):
-                if (IPv6_DETECT == False):
+                if (config.IPv6_DETECT == False):
                     if start_with_eth == 'true':
                         if headers[header_id]['name'] not in rmv_headers:
                             make_header(headers, header_ports, header_types, header_id,
@@ -343,7 +321,7 @@ def make_classes(data, control_graph, header_ports, headers, rmv_headers, fout):
                         make_header(headers, header_ports, header_types, header_id,
                                     checksums, calculations, control_graph, fout)
             elif (headers[header_id]['name'] == 'tcp'):
-                if (TCP_DETECT == False):
+                if (config.TCP_DETECT == False):
                     if start_with_eth == 'true':
                         if headers[header_id]['name'] not in rmv_headers:
                             make_header(headers, header_ports, header_types, header_id,
@@ -352,7 +330,7 @@ def make_classes(data, control_graph, header_ports, headers, rmv_headers, fout):
                         make_header(headers, header_ports, header_types, header_id,
                                     checksums, calculations, control_graph, fout)
             elif (headers[header_id]['name'] == 'udp'):
-                if (UDP_DETECT == False):
+                if (config.UDP_DETECT == False):
                     if start_with_eth == 'true':
                         if headers[header_id]['name'] not in rmv_headers:
                             make_header(headers, header_ports, header_types, header_id,
@@ -375,15 +353,15 @@ def correct_graph(graph):
     '''correct graph for inbuilt headers'''
     for i in range(len(graph)):
         edge = graph[i]
-        if (edge[0] == 'ethernet' and ETHER_DETECT):
+        if (edge[0] == 'ethernet' and config.ETHER_DETECT):
             edge[1] = 'type'
-        elif (edge[0] == 'ipv4' and IPv4_DETECT):
+        elif (edge[0] == 'ipv4' and config.IPv4_DETECT):
             edge[1] = 'proto'
-        elif (edge[0] == 'ipv6' and IPv6_DETECT):
+        elif (edge[0] == 'ipv6' and config.IPv6_DETECT):
             edge[1] = 'nh'
-        elif (edge[0] == 'tcp' and TCP_DETECT):
+        elif (edge[0] == 'tcp' and config.TCP_DETECT):
             edge[1] = 'dport'
-        elif (edge[0] == 'udp' and UDP_DETECT):
+        elif (edge[0] == 'udp' and config.UDP_DETECT):
             edge[1] = 'dport'
         graph[i] = edge
     return graph
@@ -473,7 +451,7 @@ def make_packets(header_ports, init_states, control_graph, rmv_headers, fout):
 
     paths = rectify_paths(paths)
 
-    if (DEBUG):
+    if (config.DEBUG):
         print("\nPossible paths from start to accept state\n")
         for i in paths:
             print(i)
@@ -506,19 +484,19 @@ def change_names(header_ports, control_graph, init_states, old, new):
 
 
 def correct_metadata(header_ports, control_graph, init_states):
-    if (ETHER_DETECT):
+    if (config.ETHER_DETECT):
         (header_ports, control_graph, init_states) = change_names(
             header_ports, control_graph, init_states, "ethernet", "Ether")
-    if (IPv4_DETECT):
+    if (config.IPv4_DETECT):
         (header_ports, control_graph, init_states) = change_names(
             header_ports, control_graph, init_states, "ipv4", "IP")
-    if (IPv6_DETECT):
+    if (config.IPv6_DETECT):
         (header_ports, control_graph, init_states) = change_names(
             header_ports, control_graph, init_states, "ipv6", "IPv6")
-    if (TCP_DETECT):
+    if (config.TCP_DETECT):
         (header_ports, control_graph, init_states) = change_names(
             header_ports, control_graph, init_states, "tcp", "TCP")
-    if (UDP_DETECT):
+    if (config.UDP_DETECT):
         (header_ports, control_graph, init_states) = change_names(
             header_ports, control_graph, init_states, "udp", "UDP")
     return (header_ports, control_graph, init_states)
@@ -526,12 +504,6 @@ def correct_metadata(header_ports, control_graph, init_states):
 
 def make_template(json_data, destination):
     '''top level module that calls other functions, accepts the json_data and the file destination as input'''
-    global ETHER_DETECT
-    global IPv4_DETECT
-    global IPv6_DETECT
-    global TCP_DETECT
-    global UDP_DETECT
-
     try:
         fout = open(destination, 'w')
         fout.write("from scapy.all import *\n")
@@ -542,7 +514,7 @@ def make_template(json_data, destination):
 
         # building metadata
         control_graph = correct_graph(
-            make_control_graph_multi(json_data["parsers"], DEBUG))
+            make_control_graph_multi(json_data["parsers"]))
         init_states = []
         for parser in json_data["parsers"]:
             init_states.append(search_state(parser, parser["init_state"]))
@@ -567,7 +539,7 @@ def make_template(json_data, destination):
                      headers, rmv_headers, fout)
         print('rmv_headers 517: ', rmv_headers)
 
-        if (DEBUG):
+        if (config.DEBUG):
             print("\nHeaders \n")
             for i in header_ports:
                 print (i)
@@ -579,7 +551,7 @@ def make_template(json_data, destination):
         for edge in control_graph:
             if start_with_eth == 'true':
                 if (edge[0] in header_ports) and (edge[-1] in header_ports) and edge[0] not in rmv_headers and edge[-1] not in rmv_headers:
-                    if (ETHER_DETECT or IPv4_DETECT or IPv6_DETECT or TCP_DETECT or UDP_DETECT):
+                    if (config.ETHER_DETECT or config.IPv4_DETECT or config.IPv6_DETECT or config.TCP_DETECT or config.UDP_DETECT):
                         if (edge[0] in ["Ether", "IP", "IPv6", "UDP", "TCP"]):
                             if (edge[2] != 'default') and (edge[1] != None) and (edge[2] != None):
                                 fout.write("bind_layers(%s, %s, %s=%s)\n" % (
@@ -589,7 +561,7 @@ def make_template(json_data, destination):
                                     capitalise(edge[0]), capitalise(edge[-1])))
             else:
                 if (edge[0] in header_ports) and (edge[-1] in header_ports):
-                    if (ETHER_DETECT or IPv4_DETECT or IPv6_DETECT or TCP_DETECT or UDP_DETECT):
+                    if (config.ETHER_DETECT or config.IPv4_DETECT or config.IPv6_DETECT or config.TCP_DETECT or config.UDP_DETECT):
                         if (edge[0] in ["Ether", "IP", "IPv6", "UDP", "TCP"]):
                             if (edge[2] != 'default') and (edge[1] != None) and (edge[2] != None):
                                 fout.write("bind_layers(%s, %s, %s=%s)\n" % (

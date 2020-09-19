@@ -3,16 +3,9 @@ import sys
 import os
 import math
 from tabulate import tabulate
+import config
 from common import *
 
-# global variables for common header types
-ETHER_DETECT = False
-IPv4_DETECT = False
-IPv6_DETECT = False
-TCP_DETECT = False
-UDP_DETECT = False
-
-DEBUG = False
 
 # open file to load json data
 # standardize destination path
@@ -24,7 +17,7 @@ if (DESTINATION[-1] != '/'):
 # check if debug mode activated or not
 if (len(sys.argv) > 3):
     if (sys.argv[-2] == '-d'):
-        DEBUG = True
+        config.DEBUG = True
 
 # variable to store the list of tables created by the scripts
 tables_created = []
@@ -32,12 +25,6 @@ tables_created = []
 
 # find headers and their types which appear within a packet i.e. are not metadata
 def find_data_headers(headers, header_types):
-    global ETHER_DETECT
-    global IPv4_DETECT
-    global IPv6_DETECT
-    global TCP_DETECT
-    global UDP_DETECT
-
     header_ports = []
     header_dict = {}
 
@@ -60,27 +47,27 @@ def find_data_headers(headers, header_types):
                 temp = input(
                     "\nEthernet header detected, would you like the standard ethernet header to be used(y/n) : ").strip()
                 if temp == 'y':
-                    ETHER_DETECT = True
+                    config.ETHER_DETECT = True
             elif name == 'ipv4':
                 temp = input(
                     "\nIPv4 header detected, would you like the standard IPv4 header to be used(y/n) : ").strip()
                 if temp == 'y':
-                    IPv4_DETECT = True
+                    config.IPv4_DETECT = True
             elif name == 'ipv6':
                 temp = input(
                     "\nIPv6 header detected, would you like the standard IPv6 header to be used(y/n) : ").strip()
                 if temp == 'y':
-                    IPv6_DETECT = True
+                    config.IPv6_DETECT = True
             elif name == 'tcp':
                 temp = input(
                     "\nTCP header detected, would you like the standard TCP header to be used(y/n) : ").strip()
                 if temp == 'y':
-                    TCP_DETECT = True
+                    config.TCP_DETECT = True
             elif name == 'udp':
                 temp = input(
                     "\nUDP header detected, would you like the standard UDP header to be used(y/n) : ").strip()
                 if temp == 'y':
-                    UDP_DETECT = True
+                    config.UDP_DETECT = True
 
     header_ports = list(set(header_ports))
 
@@ -88,15 +75,15 @@ def find_data_headers(headers, header_types):
     for i in header_ports:
         header_types.append(header_dict[i])
 
-    if DEBUG:
+    if config.DEBUG:
         print("\nHeaders \n")
         for i in range(len(header_ports)):
             print(header_ports[i], header_types[i]["name"])
 
     for i in range(len(header_types)):
-        if ETHER_DETECT and header_ports[i] == 'ethernet' or IPv4_DETECT and header_ports[
-                i] == 'ipv4' or IPv6_DETECT and header_ports[i] == 'ipv6' or TCP_DETECT and header_ports[
-                i] == 'tcp' or UDP_DETECT and header_ports[i] == 'udp':
+        if config.ETHER_DETECT and header_ports[i] == 'ethernet' or config.IPv4_DETECT and header_ports[
+                i] == 'ipv4' or config.IPv6_DETECT and header_ports[i] == 'ipv6' or config.TCP_DETECT and header_ports[
+                i] == 'tcp' or config.UDP_DETECT and header_ports[i] == 'udp':
             continue
         else:
             header_type = header_types[i]
@@ -251,7 +238,7 @@ def find_eth_subhdr(node, sub_headers):
 
 
 def find_ethernet(node, rmv_headers, sub_headers):
-    if node.name == "ethernet" and ETHER_DETECT == True:
+    if node.name == "ethernet" and config.ETHER_DETECT == True:
         find_eth_subhdr(node, sub_headers)
         return
     elif len(node.children) == 0:
@@ -923,7 +910,7 @@ def make_template(control_graph, header, header_type, destination, header_ports)
     fout_source.write("}")
 
 
-control_graph = make_control_graph_multi(data["parsers"], DEBUG)
+control_graph = make_control_graph_multi(data["parsers"])
 header_ports, header_types = find_data_headers(
     data["headers"], data["header_types"])
 
@@ -950,9 +937,9 @@ for item in sub_headers:
 
 
 for i in range(len(header_ports)):
-    if ((ETHER_DETECT and header_ports[i] == 'ethernet') or (IPv4_DETECT and header_ports[i] == 'ipv4') or (
-            IPv6_DETECT and header_ports[i] == 'ipv6') or (TCP_DETECT and header_ports[i] == 'tcp') or (
-            UDP_DETECT and header_ports[i] == 'udp')):
+    if ((config.ETHER_DETECT and header_ports[i] == 'ethernet') or (config.IPv4_DETECT and header_ports[i] == 'ipv4') or (
+            config.IPv6_DETECT and header_ports[i] == 'ipv6') or (config.TCP_DETECT and header_ports[i] == 'tcp') or (
+            config.UDP_DETECT and header_ports[i] == 'udp')):
         continue
 
     if start_with_eth == 'true':
