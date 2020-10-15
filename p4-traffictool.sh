@@ -170,21 +170,14 @@ if [ "$JSON_DETECT" = false ]; then
 
     # p4 source compilation
     echo -e "----------------------------------\nCompiling p4 source ..."
-    p4c-bm2-ss --std $STANDARD -o $jsonname $P4_SOURCE > $OUTPUT
+    p4c -S --std $STANDARD $P4_SOURCE > $OUTPUT
     if [ $? != "0" ]; then
-        echo "Compilation with p4c-bm2-ss failed...trying with p4c"
-        p4c -S --std $STANDARD $P4_SOURCE > $OUTPUT
-        if [ $? != "0" ]; then
-            echo "Compilation with p4c failed.. exiting"
-            cd ..
-            rm -r $foldername
-            exit 3
-        else
-            echo "Compilation successful with p4c"
-        fi
-
+        echo "Compilation with p4c failed.. exiting"
+        cd ..
+        rm -r $foldername
+        exit 3
     else
-        echo "Compilation successful with p4c-bm2-ss"
+        echo "Compilation successful with p4c"
     fi
     echo -e "------------------------------------\n"
    
