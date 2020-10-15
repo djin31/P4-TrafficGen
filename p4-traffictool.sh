@@ -138,12 +138,12 @@ else
     OUTPUT=/dev/null
 fi
 
-if [[ "$JSON_DETECT" = false && "$P4_DETECT" = false ]]; then
+if ! ("$JSON_DETECT" || "$P4_DETECT") ; then
     echo "No source specified"
     usage 2
 fi
 
-if [[ "$SCAPY" = false  &&  "$MOONGEN" = false &&  "$PCAPPLUSPLUS" = false &&  "$WIRESHARK" = false ]] ; then
+if ! ("$SCAPY" || "$MOONGEN" || "$PCAPPLUSPLUS" || "$WIRESHARK") ; then
     echo "No target specified"
     exit 1
 fi
@@ -162,7 +162,7 @@ if [ "$JSON_DETECT" = false ]; then
 	echo "Adding p4 source file to template to create p4 source file."
 	p4filename=$(basename -- "$P4_SOURCE")
 	tempcommand="awk 'FNR==8{system(\"cat $P4_SOURCE\")} 1' ../templates/template.p4 > $p4filename"
-	#echo $tempcommand
+
 	eval $tempcommand
 	tempp4source=$P4_SOURCE
 	P4_SOURCE=$p4filename
@@ -199,7 +199,6 @@ else
         OUTPUT=$(dirname "$JSONSOURCE")
         echo -e "Using the directory of source as default destination directory\n"
     fi
-
 fi
 
 # DIR stores the path to p4-traffictool script, this is required for calling backend scripts
