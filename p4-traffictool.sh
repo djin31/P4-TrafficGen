@@ -6,7 +6,7 @@
 #   3 p4 compilation error
 
 usage(){
-    echo "Usage: p4-traffictool.sh [-h|--help] [-p4 <path to p4 source>] [-json <path to json description>] [--std {p4-14|p4-16}] [--only-headers] [-o <path to destination dir>] [--scapy] [--wireshark] [--moongen] [--pcpp] [--debug]"
+    echo "Usage: p4-traffictool.sh [-h|--help] [-p4 <path to p4 source>] [-json <path to json description>] [--std {p4-14|p4-16}] [--only-headers] [-o <path to destination dir>] [--scapy] [--wireshark] [--moongen] [--pcpp] [--debug] [--all]"
     exit $1
 }
 
@@ -113,6 +113,13 @@ while test $# -gt 0; do
             shift
             PCAPPLUSPLUS=true
             ;;
+        --all)
+            shift
+            SCAPY=true
+            WIRESHARK=true
+            MOONGEN=true
+            PCAPPLUSPLUS=true
+            ;;
         --debug)
             shift
             DEBUG_MODE=true
@@ -137,51 +144,11 @@ if [[ "$JSON_DETECT" = false && "$P4_DETECT" = false ]]; then
 fi
 
 if [[ "$SCAPY" = false  &&  "$MOONGEN" = false &&  "$PCAPPLUSPLUS" = false &&  "$WIRESHARK" = false ]] ; then
-    echo "No Target specified"
-    while true; do
-        read -p "Do you wish to generate Scapy code? [y/n] " yn
-        case $yn in
-            [Yy]* ) SCAPY=true; break;;
-            [Nn]* ) break;;
-            * ) echo "Please answer yes or no.";;
-        esac
-    done
-
-    while true; do
-        read -p "Do you wish to generate MoonGen code? [y/n] " yn
-        case $yn in
-            [Yy]* ) MOONGEN=true; break;;
-            [Nn]* ) break;;
-            * ) echo "Please answer yes or no.";;
-        esac
-    done
-
-    while true; do
-        read -p "Do you wish to generate WireShark code? [y/n] " yn
-        case $yn in
-            [Yy]* ) WIRESHARK=true; break;;
-            [Nn]* ) break;;
-            * ) echo "Please answer yes or no.";;
-        esac
-    done
-
-    while true; do
-        read -p "Do you wish to generate PcapPlusPlus code? [y/n] " yn
-        case $yn in
-            [Yy]* ) PCAPPLUSPLUS=true; break;;
-            [Nn]* ) break;;
-            * ) echo "Please answer yes or no.";;
-        esac
-    done
-fi
-
-if [[ "$SCAPY" = false  &&  "$MOONGEN" = false &&  "$PCAPPLUSPLUS" = false &&  "$WIRESHARK" = false ]] ; then
-    exit 0
+    echo "No target specified"
+    exit 1
 fi
 
 if [ "$JSON_DETECT" = false ]; then
-
-
     # creates a temp folder with timestamp to hold json script and compiled binaries
     foldername="`date +%Y%m%d%H%M%S`";
     foldername="tempfolder_$foldername"
