@@ -104,8 +104,7 @@ def find_data_headers(headers, header_types):
 
 # copies template file contents
 def copy_template(fout):
-    pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
-    fin = open(pathname + "/../templates/templateMoonGen.lua", "r")
+    fin = open("/usr/share/p4-traffictool/templates/templateMoonGen.lua", "r")
     l = fin.readlines()
     for i in l:
         fout.write(i)

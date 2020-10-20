@@ -1,9 +1,10 @@
 #!/bin/bash
 
-target_file="$HOME/.bash_aliases"
+sudo apt install python3 python3-tabulate
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" 
-echo "alias p4-traffictool=$DIR/p4-traffictool.sh" >> "$target_file"
-echo "Added alias for p4-traffictool to $target_file"
+sudo cp p4-traffictool /usr/bin/
 
-source "$HOME/.bashrc"
+sudo mkdir -p /usr/share/p4-traffictool/src
+sudo mkdir -p /usr/share/p4-traffictool/templates
+sudo cp src/*.py /usr/share/p4-traffictool/src/
+sudo cp templates/* /usr/share/p4-traffictool/templates/
