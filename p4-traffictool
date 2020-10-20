@@ -151,7 +151,7 @@ fi
 if [ "$JSON_DETECT" = false ]; then
     # creates a temp folder with timestamp to hold json script and compiled binaries
     foldername="`date +%Y%m%d%H%M%S`";
-    foldername="/tmp/tempfolder_$foldername"
+    foldername="/tmp/p4-traffictool/tempfolder_$foldername"
     jsonname=$(basename -- "$P4_SOURCE")
     jsonname="${jsonname%.*}.json"
     mkdir -p $foldername
