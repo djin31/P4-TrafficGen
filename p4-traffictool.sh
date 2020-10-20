@@ -151,17 +151,17 @@ fi
 if [ "$JSON_DETECT" = false ]; then
     # creates a temp folder with timestamp to hold json script and compiled binaries
     foldername="`date +%Y%m%d%H%M%S`";
-    foldername="tempfolder_$foldername"
+    foldername="/tmp/tempfolder_$foldername"
     jsonname=$(basename -- "$P4_SOURCE")
     jsonname="${jsonname%.*}.json"
-    mkdir $foldername
+    mkdir -p $foldername
     cd $foldername
 
     # creates a tempfile which adds the headers along with stub functions for v1 model 
     if [ "$ONLY_HEADERS" = true ]; then
 	echo "Adding p4 source file to template to create p4 source file."
 	p4filename=$(basename -- "$P4_SOURCE")
-	tempcommand="awk 'FNR==8{system(\"cat $P4_SOURCE\")} 1' ../templates/template.p4 > $p4filename"
+	tempcommand="awk 'FNR==8{system(\"cat $P4_SOURCE\")} 1' /usr/share/p4-traffictool/templates/template.p4 > $p4filename"
 
 	eval $tempcommand
 	tempp4source=$P4_SOURCE
@@ -215,32 +215,28 @@ if [[ "$SCAPY" = true ]];then
     temp="$OUTPUT/scapy"
     echo "Running Scapy backend script"
     mkdir -p $temp
-    python $DIR/src/GenTrafficScapy.py $JSONSOURCE $temp $DEBUG_MODE $START_WITH_ETH
+    python /usr/share/p4-traffictool/src/GenTrafficScapy.py $JSONSOURCE $temp $DEBUG_MODE $START_WITH_ETH
     echo -e "------------------------------------\n"
 fi
 if [[ "$WIRESHARK" = true ]];then
     temp="$OUTPUT/wireshark"
     echo "Running Lua dissector backend script"
     mkdir -p $temp
-    python $DIR/src/DissectTrafficLua.py $JSONSOURCE $temp $DEBUG_MODE
+    python /usr/share/p4-traffictool/src/DissectTrafficLua.py $JSONSOURCE $temp $DEBUG_MODE
     echo -e "------------------------------------\n"
 fi
 if [[ "$MOONGEN" = true ]];then
     temp="$OUTPUT/moongen"
     echo "Running MoonGen backend script"
     mkdir -p $temp
-    python $DIR/src/GenTrafficMoonGen.py $JSONSOURCE $temp $DEBUG_MODE $START_WITH_ETH
+    python /usr/share/p4-traffictool/src/GenTrafficMoonGen.py $JSONSOURCE $temp $DEBUG_MODE $START_WITH_ETH
     echo -e "------------------------------------\n"
 fi
 if [[ "$PCAPPLUSPLUS" = true ]];then
     temp="$OUTPUT/pcapplusplus"
     echo "Running PcapPlusPlus backend script"
     mkdir -p $temp
-    python $DIR/src/DissectTrafficPcap.py $JSONSOURCE $temp $DEBUG_MODE $START_WITH_ETH
+    python /usr/share/p4-traffictool/src/DissectTrafficPcap.py $JSONSOURCE $temp $DEBUG_MODE $START_WITH_ETH
     echo -e "------------------------------------\n"
 fi
 
-# remove tempfolder created
-if [[ "$JSON_DETECT" = false ]]; then
-    rm -rf $foldername
-fi
