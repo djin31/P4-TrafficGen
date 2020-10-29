@@ -78,20 +78,20 @@ The code for Scapy would be generated in the output directory inside a subdirect
 
 ### Integration and Usage with Scapy
 1. In your Python code that uses Scapy, import the generated Python file using
-    ```python
+    ```
     from <filename> import *
     ```
 
 2. Then, you can generate packets using standard Scapy format. For example, if you want to generate a packet with custom P4-defined layers _foo_ and _bar_ with payload _"foobar"_ , then:
-    ```python
+    ```
     a = Foo()/Bar()/"foobar"
     ```
     will generate the required packet.
 
-3. Also you can access a list of possible packet combinations using the variable `possible_packets_`.
+3. Also you can access a list of possible packet combinations using the variable `possible_packets_`. 
 
 4. To send packets on the wire, use the `send()` or `sendp()` methods:
-    ```python
+    ```
     sendp(p, iface=<netdev interface>)
     ```
     `p` is the packet intended to be sent.
